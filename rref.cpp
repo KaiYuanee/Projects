@@ -1,14 +1,20 @@
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 using namespace std;
+
+// newMatrix 函式用來簡化在程式中創建一個矩陣的寫法
+vector<vector<double>> newMatrix(int row, int col) {
+    return vector<vector<double>>(row, vector<double>(col));
+}
 
 // clearZeroRows 函式用來將矩陣的所有零列移至最下方
 void clearZeroRows(vector<vector<double>> &mtx) {
     int row = mtx.size();
     int col = mtx[0].size();
-    vector<vector<double>> non_zero_rows;
-    vector<vector<double>> zero_rows;
+    vector<vector<double>> non_zero_rows = newMatrix(0, 0);
+    vector<vector<double>> zero_rows = newMatrix(0, 0);
 
     // 遍歷整個矩陣，檢查各列是否為零列並存放在相應的陣列
     for (int i = 0; i < row; i++) {
@@ -38,16 +44,68 @@ bool isZero(double num) {
     return fabs(num) < epsilon;
 }
 
+// rowReduct 函式用來做高斯消去法中列的相減
+void rowReduct(vector<double> &row1, vector<double> row2, int pivot_col_idx) {
+    int row_len = row1.size();
+    double mtp = row1[pivot_col_idx] / row2[pivot_col_idx]; // mtp 是 multiple 的縮寫，代表要乘 row2 的倍數
+    for (int i = 0; i < row_len; i++) { // 執行列的相減
+        row1[i] -= row2[i] * mtp;
+        if (isZero(row1[i])) { // 解決浮點數誤差
+            row1[i] = 0;
+        }
+    }
+}
+
+// ref 函式使用高斯消去法將矩陣轉換成列階梯形矩陣
+void ref(vector<vector<double>> &mtx) {
+    clearZeroRows(mtx); // 先將矩陣的所有零列移至最下方，避免多餘的操作與檢查
+
+    // 執行高斯消去法
+    int row = mtx.size();
+    int col = mtx[0].size();
+    int pivot_row_idx = 0; // pivot_row_idx 代表當前 pivot 的所在列數
+    int pivot_col_idx = 0; // pivot_col_idx 代表當前 pivot 的所在行數
+    while ((pivot_row_idx < row) && (pivot_col_idx < col)) { // 持續操作直到當前 pivot 超出矩陣範圍
+        // 檢查當前 pivot 是否為0
+
+        // 若當前 pivot 為0，則往下尋找當前 pivot 所在的行中第一個非零元素所在的列
+        if (isZero(mtx[pivot_row_idx][pivot_col_idx])) {
+            int next_non_zero_row_idx = pivot_row_idx + 1;
+            while (next_non_zero_row_idx < row) {
+                if (!isZero(mtx[next_non_zero_row_idx][pivot_col_idx])) { // 找到的話就交換這兩行，即可讓高斯消去繼續進行
+                    swap(mtx[pivot_row_idx], mtx[next_non_zero_row_idx]);
+                    break;
+                }
+                next_non_zero_row_idx++;
+            }
+            if (next_non_zero_row_idx >= row) { // 如果找不到，代表該行消去完成，接著尋找下一個 pivot
+                pivot_row_idx++;
+                pivot_col_idx++;
+            }
+        }
+
+        // 若當前 pivot 不為0，則用該 pivot 列分別減去其下方所有的列
+        else {
+            for (int i = pivot_row_idx + 1; i < row; i++) {
+                rowReduct(mtx[i], mtx[pivot_row_idx], pivot_col_idx);
+            }
+            pivot_row_idx++;
+        }
+    }
+
+    clearZeroRows(mtx); // 高斯消去完成後，將過程中產生的零列都移至最下方
+}
+
 int main() {
     int row, col;
     cin >> row >> col;
-    vector<vector<double>> mtx(row, vector<double>(col));
+    vector<vector<double>> mtx = newMatrix(row, col);
     for (int i = 0; i < row; i++) {
         for (int j = 0; j < col; j++) {
             cin >> mtx[i][j];
         }
     }
-    clearZeroRows(mtx);
+    ref(mtx);
     for (int i = 0; i < row; i++) {
         for (int j = 0; j < col; j++) {
             cout << mtx[i][j] << ' ';
