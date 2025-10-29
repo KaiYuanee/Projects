@@ -90,6 +90,7 @@ void ref(vector<vector<double>> &mtx) {
                 rowReduct(mtx[i], mtx[pivot_row_idx], pivot_col_idx);
             }
             pivot_row_idx++;
+            pivot_col_idx++;
         }
     }
 
@@ -98,14 +99,19 @@ void ref(vector<vector<double>> &mtx) {
 
 int main() {
     int row, col;
-    cin >> row >> col;
+    cout << "Please enter the number of rows of the matrix: ";
+    cin >> row;
+    cout << "Please enter the number of columns of the matrix: ";
+    cin >> col;
     vector<vector<double>> mtx = newMatrix(row, col);
+    cout << "Please enter the matrix: " << endl;
     for (int i = 0; i < row; i++) {
         for (int j = 0; j < col; j++) {
             cin >> mtx[i][j];
         }
     }
     ref(mtx);
+    cout << "The row echelon form of the matrix is: " << endl;
     for (int i = 0; i < row; i++) {
         for (int j = 0; j < col; j++) {
             cout << mtx[i][j] << ' ';
