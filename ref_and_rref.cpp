@@ -156,10 +156,10 @@ int main() {
         }
     }
     ref(mtx);
-    cout << "The row echelon form of the matrix is: " << endl;
+    cout << "The row echelon form (REF) of the matrix is: " << endl;
     printMatrix(mtx);
     rref(mtx);
-    cout << "The reduced row echelon form of the matrix is: " << endl;
+    cout << "The reduced row echelon form (RREF) of the matrix is: " << endl;
     printMatrix(mtx);
     return 0;
 }
