@@ -9,6 +9,17 @@ vector<vector<double>> newMatrix(int row, int col) {
     return vector<vector<double>>(row, vector<double>(col));
 }
 
+void printMatrix(vector<vector<double>> mtx) {
+    int row = mtx.size();
+    int col = mtx[0].size();
+    for (int i = 0; i < row; i++) {
+        for (int j = 0; j < col; j++) {
+            cout << mtx[i][j] << ' ';
+        }
+        cout << endl;
+    }
+}
+
 // clearZeroRows 函式用來將矩陣的所有零列移至最下方
 void clearZeroRows(vector<vector<double>> &mtx) {
     int row = mtx.size();
@@ -60,14 +71,13 @@ void rowReduct(vector<double> &row1, vector<double> row2, int pivot_col_idx) {
 void ref(vector<vector<double>> &mtx) {
     clearZeroRows(mtx); // 先將矩陣的所有零列移至最下方，避免多餘的操作與檢查
 
-    // 執行高斯消去法
+    // 向下執行高斯消去法
     int row = mtx.size();
     int col = mtx[0].size();
     int pivot_row_idx = 0; // pivot_row_idx 代表當前 pivot 的所在列數
     int pivot_col_idx = 0; // pivot_col_idx 代表當前 pivot 的所在行數
     while ((pivot_row_idx < row) && (pivot_col_idx < col)) { // 持續操作直到當前 pivot 超出矩陣範圍
         // 檢查當前 pivot 是否為0
-
         // 若當前 pivot 為0，則往下尋找當前 pivot 所在的行中第一個非零元素所在的列
         if (isZero(mtx[pivot_row_idx][pivot_col_idx])) {
             int next_non_zero_row_idx = pivot_row_idx + 1;
@@ -79,7 +89,6 @@ void ref(vector<vector<double>> &mtx) {
                 next_non_zero_row_idx++;
             }
             if (next_non_zero_row_idx >= row) { // 如果找不到，代表該行消去完成，接著尋找下一個 pivot
-                pivot_row_idx++;
                 pivot_col_idx++;
             }
         }
@@ -97,6 +106,39 @@ void ref(vector<vector<double>> &mtx) {
     clearZeroRows(mtx); // 高斯消去完成後，將過程中產生的零列都移至最下方
 }
 
+// rref 函式使用高斯消去法將矩陣轉換成簡化列階梯形矩陣
+void rref(vector<vector<double>> &mtx) {
+    // 先把矩陣轉換成列階梯形矩陣
+    ref(mtx);
+
+    // 將矩陣的每一行分別除以該行的pivot，使得每一行的pivot皆為1
+    for (int i = 0; i < mtx.size(); i++) {
+        for (int j = 0; j < mtx[i].size(); j++) {
+            if (!isZero(mtx[i][j])) {
+                double divisor = mtx[i][j];
+                for (int k = j; k < mtx[i].size(); k++) {
+                    mtx[i][k] /= divisor;
+                }
+                break;
+            }
+        }
+    }
+
+    // 向上執行高斯消去法，做法與向下的類似，目的是為了讓每一個pivot列只有pivot是1，其它元素都是0
+    for (int i = 0; i < mtx.size(); i++) {
+        for (int j = 0; j < mtx[i].size(); j++) {
+            if (!isZero(mtx[i][j])) {
+                for (int k = 0; k < i; k++) {
+                    if (!isZero(mtx[k][j])) {
+                        rowReduct(mtx[k], mtx[i], j);
+                    }
+                }
+                break;
+            }
+        }
+    }
+}
+
 int main() {
     int row, col;
     cout << "Please enter the number of rows of the matrix: ";
@@ -112,11 +154,9 @@ int main() {
     }
     ref(mtx);
     cout << "The row echelon form of the matrix is: " << endl;
-    for (int i = 0; i < row; i++) {
-        for (int j = 0; j < col; j++) {
-            cout << mtx[i][j] << ' ';
-        }
-        cout << endl;
-    }
+    printMatrix(mtx);
+    rref(mtx);
+    cout << "The reduced row echelon form of the matrix is: " << endl;
+    printMatrix(mtx);
     return 0;
 }
