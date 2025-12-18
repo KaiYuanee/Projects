@@ -11,6 +11,7 @@ vector<vector<double>> newMatrix(int row, int col) {
     return vector<vector<double>>(row, vector<double>(col));
 }
 
+// printMatrix 函式簡化在終端機中印出矩陣的寫法
 void printMatrix(vector<vector<double>> mtx) {
     int row = mtx.size();
     int col = mtx[0].size();
