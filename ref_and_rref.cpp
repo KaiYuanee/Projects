@@ -1,3 +1,5 @@
+// Copyright (C) 2025 KaiYuan Chang
+
 #include <iostream>
 #include <vector>
 #include <cmath>
