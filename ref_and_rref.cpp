@@ -12,7 +12,7 @@ vector<vector<double>> newMatrix(int row, int col) {
 }
 
 // printMatrix 函式簡化在終端機中印出矩陣的寫法
-void printMatrix(vector<vector<double>> mtx) {
+void printMatrix(vector<vector<double>> &mtx) {
     int row = mtx.size();
     int col = mtx[0].size();
     for (int i = 0; i < row; i++) {
@@ -59,7 +59,7 @@ bool isZero(double num) {
 }
 
 // rowReduct 函式用來做高斯消去法中列的相減
-void rowReduct(vector<double> &row1, vector<double> row2, int pivot_col_idx) {
+void rowReduct(vector<double> &row1, const vector<double> &row2, int pivot_col_idx) {
     int row_len = row1.size();
     double mtp = row1[pivot_col_idx] / row2[pivot_col_idx]; // mtp 是 multiple 的縮寫，代表要乘 row2 的倍數
     for (int i = 0; i < row_len; i++) { // 執行列的相減
